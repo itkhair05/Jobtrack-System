@@ -47,9 +47,12 @@ export default function Applications() {
   }, [searchInput])
 
   useEffect(() => {
-    setSearchInput(urlSearch)
-    setSearch(urlSearch)
-    setPage(0)
+    const timer = window.setTimeout(() => {
+      setSearchInput(urlSearch)
+      setSearch(urlSearch)
+      setPage(0)
+    }, 0)
+    return () => window.clearTimeout(timer)
   }, [urlSearch])
 
   useEffect(() => {

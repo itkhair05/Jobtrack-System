@@ -11,7 +11,17 @@ export default function Navbar() {
   const [reminderCount, setReminderCount] = useState(0)
 
   useEffect(() => {
-    getFollowUps(7).then((items) => setReminderCount(items.length)).catch(() => setReminderCount(0))
+    let active = true
+    getFollowUps(7)
+      .then((items) => {
+        if (active) setReminderCount(items.length)
+      })
+      .catch(() => {
+        if (active) setReminderCount(0)
+      })
+    return () => {
+      active = false
+    }
   }, [location.pathname])
 
   return (
@@ -21,18 +31,25 @@ export default function Navbar() {
           className="navbar-icon-button"
           type="button"
           onClick={() => navigate('/?reminders=1')}
-          aria-label={`${reminderCount} thông báo follow-up`}
+          aria-label={`${reminderCount} việc cần follow-up`}
+          title={`${reminderCount} việc cần follow-up`}
         >
           <Bell size={18} />
           {reminderCount > 0 && <i>{Math.min(reminderCount, 9)}</i>}
         </button>
-        <button className="navbar-profile" type="button" onClick={() => navigate('/settings')}>
+        <button
+          className="navbar-profile"
+          type="button"
+          onClick={() => navigate('/settings')}
+          aria-label="Cài đặt tài khoản"
+          title="Cài đặt tài khoản"
+        >
           <span className="avatar">{(user?.fullName || user?.email || 'U')[0].toUpperCase()}</span>
           <span>
             <b>{user?.fullName || 'Người dùng'}</b>
             <small>{user?.email}</small>
           </span>
-          <Settings size={16} />
+          <Settings size={16} aria-hidden="true" />
         </button>
       </div>
     </header>

@@ -31,7 +31,7 @@ export default function ApplicationDetail() {
     }
     void load()
     return () => { active = false }
-  }, [id])
+  }, [id, user])
 
   if (isLoading) return <main className="detail-loading"><LoaderCircle className="spin" size={26} /> Đang tải chi tiết...</main>
   if (error || !detail) return <main className="detail-loading"><p>{error || 'Không tìm thấy đơn ứng tuyển.'}</p><button className="secondary-button" type="button" onClick={() => navigate('/')}>Về Dashboard</button></main>

@@ -58,8 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (active) setIsLoading(false)
         })
       return () => { active = false }
-    } else {
-      setIsLoading(false)
     }
   }, [token, user])
 
