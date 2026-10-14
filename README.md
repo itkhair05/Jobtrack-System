@@ -110,12 +110,57 @@ Mở **http://localhost:5173**. Frontend gọi `http://localhost:8080/api/v1` m�
 ### 3. Hoặc chạy toàn bộ bằng Docker Compose
 
 ```bash
-cp .env.example .env                        # điền các secret
-cd backend && ./mvnw package -DskipTests && cd ..
+cp .env.example .env                        # điền các biến cấu hình (hoặc điều chỉnh MYSQL_PORT nếu cần)
 docker compose up --build
 ```
 
-Khởi động MySQL 8.4 (port 3306) và API (port 8080, profile `prod`). API đợi MySQL healthcheck xong mới chạy. Image backend yêu cầu jar đã build sẵn trong `backend/target/`.
+Khởi động MySQL 8.4 (port 3306 hoặc `MYSQL_PORT`) và API (port 8080, profile `prod`). Dockerfile backend sử dụng multi-stage build (tự động biên dịch JAR bên trong container, không yêu cầu build trước trên máy host). API đợi MySQL healthcheck đạt trạng thái healthy mới khởi động.
+
+## Triển khai Production (Target Architecture)
+
+Hệ thống được thiết kế để triển khai trên kiến trúc:
+- **Backend**: Render (Docker Web Service)
+- **Frontend**: Cloudflare Pages (Vite SPA)
+- **Database**: Aiven for MySQL (kết nối TLS bảo mật)
+- **CV Storage**: Render Persistent Disk
+
+### 1. Chuẩn bị Database (Aiven for MySQL)
+1. Tạo dịch vụ MySQL trên [Aiven](https://aiven.io/).
+2. Thu thập connection URI hoặc các tham số: Host, Port, Database, User, Password.
+3. Tham số JDBC URL bắt buộc phải có TLS mode:
+   ```text
+   jdbc:mysql://<AIVEN_HOST>:<AIVEN_PORT>/<AIVEN_DB>?sslMode=REQUIRED&serverTimezone=UTC
+   ```
+
+### 2. Triển khai Backend lên Render
+1. Tạo **Web Service** mới trên Render, kết nối với kho mã nguồn GitHub repository.
+2. Thiết lập:
+   - **Environment**: Docker
+   - **Dockerfile Path**: `./backend/Dockerfile`
+   - **Docker Context**: `./backend`
+   - **Health Check Path**: `/actuator/health`
+3. Cấu hình biến môi trường (**Environment Variables**):
+   - `SPRING_PROFILES_ACTIVE`: `prod`
+   - `DB_URL`: `jdbc:mysql://<AIVEN_HOST>:<AIVEN_PORT>/<AIVEN_DB>?sslMode=REQUIRED&serverTimezone=UTC`
+   - `DB_USERNAME`: `<AIVEN_USER>`
+   - `DB_PASSWORD`: `<AIVEN_PASSWORD>`
+   - `JWT_SECRET`: `<chuoix-ngau-nhien-toi-thieu-32-ky-tu>`
+   - `CORS_ALLOWED_ORIGINS`: `https://<ten-project>.pages.dev` (URL Cloudflare Pages của bạn)
+   - `UPLOAD_DIRECTORY`: `/var/lib/jobtrack/uploads/cvs`
+4. **Lưu trữ CV lâu dài (Persistent Disk)**:
+   - File system mặc định trên Render là ephemeral (dữ liệu CV sẽ mất khi container restart hoặc deploy mới).
+   - Thêm một **Persistent Disk** trên Render (gói có phí) và mount vào đường dẫn: `/var/lib/jobtrack/uploads/cvs`.
+
+### 3. Triển khai Frontend lên Cloudflare Pages
+1. Tạo project mới trên **Cloudflare Pages**, kết nối với GitHub repo.
+2. Cấu hình Build:
+   - **Framework preset**: Vite
+   - **Root directory**: `frontend`
+   - **Build command**: `npm run build`
+   - **Build output directory**: `dist`
+3. Cấu hình biến môi trường Build (**Build Environment Variables**):
+   - `VITE_API_URL`: `https://<ten-backend-render>.onrender.com/api/v1`
+4. Cấu hình SPA routing: Repo đã tích hợp sẵn `frontend/public/_redirects` (`/* /index.html 200`) để đảm bảo không bị lỗi 404 khi người dùng refresh hoặc truy cập trực tiếp route con.
 
 ## Cấu hình
 
