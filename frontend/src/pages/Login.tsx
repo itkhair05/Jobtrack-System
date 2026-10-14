@@ -40,8 +40,10 @@ export default function Login() {
   return (
     <main className="auth-shell">
       <section className="auth-brand-panel">
-        <div className="brand-mark"><BriefcaseBusiness size={20} strokeWidth={2.5} /></div>
-        <span className="brand-name">JobTrack</span>
+        <Link to="/" className="auth-brand-logo" aria-label="JobTrack Trang chủ">
+          <span className="brand-mark"><BriefcaseBusiness size={20} strokeWidth={2.5} /></span>
+          <span className="brand-name">JobTrack</span>
+        </Link>
         <div className="brand-copy">
           <p className="eyebrow">YOUR NEXT MOVE, ORGANIZED</p>
           <h1>Make every application<br /><em>count.</em></h1>
@@ -51,8 +53,11 @@ export default function Login() {
       </section>
 
       <section className="auth-form-panel">
-        <div className="mobile-brand"><div className="brand-mark"><BriefcaseBusiness size={18} /></div><span>JobTrack</span></div>
         <div className="form-wrap">
+          <Link to="/" className="mobile-brand" aria-label="JobTrack Trang chủ">
+            <span className="brand-mark"><BriefcaseBusiness size={18} /></span>
+            <span className="brand-name">JobTrack</span>
+          </Link>
           <div className="form-heading">
             <p className="eyebrow">WELCOME BACK</p>
             <h2>Đăng nhập</h2>

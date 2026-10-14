@@ -41,8 +41,10 @@ export default function Register() {
   return (
     <main className="auth-shell register-shell">
       <section className="auth-brand-panel">
-        <div className="brand-mark"><BriefcaseBusiness size={20} strokeWidth={2.5} /></div>
-        <span className="brand-name">JobTrack</span>
+        <Link to="/" className="auth-brand-logo" aria-label="JobTrack Trang chủ">
+          <span className="brand-mark"><BriefcaseBusiness size={20} strokeWidth={2.5} /></span>
+          <span className="brand-name">JobTrack</span>
+        </Link>
         <div className="brand-copy">
           <p className="eyebrow">START WITH CLARITY</p>
           <h1>Your job search,<br /><em>in motion.</em></h1>
@@ -52,8 +54,11 @@ export default function Register() {
       </section>
 
       <section className="auth-form-panel">
-        <div className="mobile-brand"><div className="brand-mark"><BriefcaseBusiness size={18} /></div><span>JobTrack</span></div>
         <div className="form-wrap">
+          <Link to="/" className="mobile-brand" aria-label="JobTrack Trang chủ">
+            <span className="brand-mark"><BriefcaseBusiness size={18} /></span>
+            <span className="brand-name">JobTrack</span>
+          </Link>
           <div className="form-heading"><p className="eyebrow">CREATE YOUR ACCOUNT</p><h2>Bắt đầu thôi</h2><p>Tạo tài khoản miễn phí trong vài giây.</p></div>
           {serverError && <div className="form-alert" role="alert"><AlertCircle size={18} />{serverError}</div>}
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
