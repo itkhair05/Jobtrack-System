@@ -513,7 +513,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 .submit-button:hover, .workspace-button:hover { background: var(--blue-dark); transform: translateY(-1px); }
 .submit-button:disabled { cursor: wait; opacity: .7; }
+.field-label-row { display: flex; align-items: center; justify-content: space-between; margin: 20px 0 8px; }
+.field-label-row .field-label { margin: 0; }
+.forgot-password-link { font-size: 12px; font-weight: 600; color: var(--blue); text-decoration: none; }
+.forgot-password-link:hover { text-decoration: underline; }
 .form-alert { display: flex; gap: 9px; align-items: center; padding: 12px 14px; border: 1px solid #fecaca; border-radius: 9px; color: #991b1b; background: #fef2f2; font-size: 12px; }
+.form-alert.form-alert-success { border-color: #bbf7d0; color: #166534; background: #f0fdf4; }
 .switch-auth { margin: 25px 0 0; color: var(--muted); text-align: center; font-size: 13px; }
 .switch-auth a { color: var(--blue); font-weight: 700; text-decoration: none; }
 .switch-auth a:hover { text-decoration: underline; }

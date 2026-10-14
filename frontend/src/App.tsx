@@ -10,6 +10,8 @@ const Applications = lazy(() => import('./pages/Applications'))
 const Analytics = lazy(() => import('./pages/Analytics'))
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
 const Settings = lazy(() => import('./pages/Settings'))
 const ApplicationDetail = lazy(() => import('./pages/ApplicationDetail'))
 const Cvs = lazy(() => import('./pages/Cvs'))
@@ -22,6 +24,8 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />

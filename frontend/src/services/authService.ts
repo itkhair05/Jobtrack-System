@@ -32,3 +32,22 @@ export const register = async (payload: RegisterPayload) => {
   const { data } = await api.post<AuthResponse>('/auth/register', payload)
   return data
 }
+
+export interface MessageResponse {
+  message: string
+}
+
+export const forgotPassword = async (email: string) => {
+  const { data } = await api.post<MessageResponse>('/auth/forgot-password', { email })
+  return data
+}
+
+export const resetPassword = async (token: string, newPassword: string, confirmPassword: string) => {
+  const { data } = await api.post<MessageResponse>('/auth/reset-password', {
+    token,
+    newPassword,
+    confirmPassword,
+  })
+  return data
+}
+

@@ -6,6 +6,7 @@ import { AlertCircle, ArrowRight, BriefcaseBusiness, LoaderCircle, LockKeyhole, 
 import { z } from 'zod'
 import { useAuth } from '../context/AuthContext'
 import { getErrorMessage } from '../utils/errorMessage'
+import Toast from '../components/Toast'
 
 const loginSchema = z.object({
   email: z.string().trim().email('Vui lòng nhập email hợp lệ'),
@@ -19,6 +20,9 @@ export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const [serverError, setServerError] = useState('')
+  const [toastNotice, setToastNotice] = useState<string>(
+    (location.state as { message?: string } | null)?.message ?? ''
+  )
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   })
@@ -39,6 +43,7 @@ export default function Login() {
 
   return (
     <main className="auth-shell">
+      {toastNotice && <Toast message={toastNotice} onClose={() => setToastNotice('')} />}
       <section className="auth-brand-panel">
         <Link to="/" className="auth-brand-logo" aria-label="JobTrack Trang chủ">
           <span className="brand-mark"><BriefcaseBusiness size={20} strokeWidth={2.5} /></span>
@@ -73,7 +78,10 @@ export default function Login() {
             </div>
             {errors.email && <p className="field-error">{errors.email.message}</p>}
 
-            <label className="field-label" htmlFor="password">Mật khẩu</label>
+            <div className="field-label-row">
+              <label className="field-label" htmlFor="password">Mật khẩu</label>
+              <Link to="/forgot-password" className="forgot-password-link">Quên mật khẩu?</Link>
+            </div>
             <div className={`input-wrap ${errors.password ? 'has-error' : ''}`}>
               <LockKeyhole size={18} /><input id="password" type="password" placeholder="Nhập mật khẩu" autoComplete="current-password" {...register('password')} />
             </div>

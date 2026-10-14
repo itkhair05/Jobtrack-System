@@ -16,7 +16,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
 
-    private static final long WINDOW_MILLIS = 60_000;
+    private static final long DEFAULT_WINDOW_MILLIS = 60_000;
+    private static final long ONE_HOUR_MILLIS = 3_600_000;
+
     private final Map<String, Counter> counters = new ConcurrentHashMap<>();
     private final AtomicLong lastCleanup = new AtomicLong(System.currentTimeMillis());
 
@@ -24,8 +26,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String path = request.getRequestURI();
-        int limit = path.startsWith("/api/v1/auth/") ? 10 : path.equals("/api/v1/cvs/upload") ? 20 : 0;
-        if (limit == 0) {
+        RateLimitConfig config = resolveConfig(path);
+        if (config == null) {
             chain.doFilter(request, response);
             return;
         }
@@ -34,10 +36,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
         cleanupExpired(now);
         String key = request.getRemoteAddr() + ":" + path;
         Counter counter = counters.compute(key, (ignored, current) -> {
-            if (current == null || now - current.startedAt > WINDOW_MILLIS) return new Counter(now, 1);
-            return new Counter(current.startedAt, current.count + 1);
+            if (current == null || now - current.startedAt > config.windowMillis()) {
+                return new Counter(now, 1, config.windowMillis());
+            }
+            return new Counter(current.startedAt, current.count + 1, config.windowMillis());
         });
-        if (counter.count > limit) {
+        if (counter.count > config.limit()) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.setContentType("application/json");
             response.getWriter().write("{\"timestamp\":\"" + Instant.now() + "\",\"status\":429,\"message\":\"Too many requests\",\"path\":\"" + path + "\"}");
@@ -46,11 +50,28 @@ public class RateLimitFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    private void cleanupExpired(long now) {
-        long previousCleanup = lastCleanup.get();
-        if (now - previousCleanup < WINDOW_MILLIS || !lastCleanup.compareAndSet(previousCleanup, now)) return;
-        counters.entrySet().removeIf(entry -> now - entry.getValue().startedAt > WINDOW_MILLIS);
+    private RateLimitConfig resolveConfig(String path) {
+        if (path.equals("/api/v1/auth/forgot-password")) {
+            return new RateLimitConfig(3, ONE_HOUR_MILLIS);
+        }
+        if (path.equals("/api/v1/auth/reset-password")) {
+            return new RateLimitConfig(5, ONE_HOUR_MILLIS);
+        }
+        if (path.startsWith("/api/v1/auth/")) {
+            return new RateLimitConfig(10, DEFAULT_WINDOW_MILLIS);
+        }
+        if (path.equals("/api/v1/cvs/upload")) {
+            return new RateLimitConfig(20, DEFAULT_WINDOW_MILLIS);
+        }
+        return null;
     }
 
-    private record Counter(long startedAt, int count) { }
+    private void cleanupExpired(long now) {
+        long previousCleanup = lastCleanup.get();
+        if (now - previousCleanup < DEFAULT_WINDOW_MILLIS || !lastCleanup.compareAndSet(previousCleanup, now)) return;
+        counters.entrySet().removeIf(entry -> now - entry.getValue().startedAt > entry.getValue().windowMillis);
+    }
+
+    private record RateLimitConfig(int limit, long windowMillis) { }
+    private record Counter(long startedAt, int count, long windowMillis) { }
 }
