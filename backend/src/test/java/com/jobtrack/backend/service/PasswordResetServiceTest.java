@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -23,7 +25,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -40,14 +41,14 @@ class PasswordResetServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private JavaMailSender mailSender;
+    private ResendEmailService emailService;
 
     private PasswordResetService service;
     private User user;
 
     @BeforeEach
     void setUp() {
-        service = new PasswordResetService(userRepository, tokenRepository, passwordEncoder, mailSender);
+        service = new PasswordResetService(userRepository, tokenRepository, passwordEncoder, emailService);
         user = new User();
         user.setEmail("user@example.com");
         user.setPasswordHash("old_hash");
@@ -61,7 +62,7 @@ class PasswordResetServiceTest {
                 .doesNotThrowAnyException();
 
         verify(tokenRepository, never()).save(any());
-        verifyNoInteractions(mailSender);
+        verifyNoInteractions(emailService);
     }
 
     @Test
@@ -80,6 +81,8 @@ class PasswordResetServiceTest {
         assertThat(savedToken.getTokenHash()).isNotBlank();
         assertThat(savedToken.getExpiresAt()).isAfterOrEqualTo(before.plus(Duration.ofMinutes(59)));
         assertThat(savedToken.getExpiresAt()).isBeforeOrEqualTo(after.plus(Duration.ofMinutes(61)));
+
+        verify(emailService).sendPasswordResetEmail(eq("user@example.com"), anyString());
     }
 
     @Test
