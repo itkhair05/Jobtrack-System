@@ -1,5 +1,7 @@
 # JobTrack
 
+[![CI](https://github.com/itkhair05/Jobtrack-System/actions/workflows/ci.yml/badge.svg)](https://github.com/itkhair05/Jobtrack-System/actions/workflows/ci.yml)
+
 Công cụ theo dõi quá trình ứng tuyển việc làm full-stack, hỗ trợ quản lý toàn bộ vòng đời ứng tuyển từ giai đoạn lưu trữ hồ sơ đến khi nhận việc.
 
 ![Java](https://img.shields.io/badge/Java-17-orange?logo=openjdk&logoColor=white)
