@@ -24,14 +24,14 @@ export default function Login() {
   })
 
   if (user) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/dashboard" replace />
   }
 
   const onSubmit = async (values: LoginForm) => {
     setServerError('')
     try {
       await login(values)
-      navigate((location.state as { from?: string } | null)?.from ?? '/', { replace: true })
+      navigate((location.state as { from?: string } | null)?.from ?? '/dashboard', { replace: true })
     } catch (error) {
       setServerError(getErrorMessage(error, 'Email hoặc mật khẩu không chính xác.'))
     }

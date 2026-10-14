@@ -4,6 +4,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import MainLayout from './layouts/MainLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 
+const LandingPage = lazy(() => import('./pages/LandingPage'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Applications = lazy(() => import('./pages/Applications'))
 const Analytics = lazy(() => import('./pages/Analytics'))
@@ -18,11 +19,12 @@ function App() {
     <ErrorBoundary>
       <Suspense fallback={<main className="detail-loading">Đang tải JobTrack...</main>}>
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/applications" element={<Applications />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/settings" element={<Settings />} />

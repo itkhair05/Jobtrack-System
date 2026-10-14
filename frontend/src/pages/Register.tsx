@@ -25,14 +25,14 @@ export default function Register() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegisterForm>({ resolver: zodResolver(registerSchema) })
 
   if (user) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/dashboard" replace />
   }
 
   const onSubmit = async (values: RegisterForm) => {
     setServerError('')
     try {
       await registerUser({ email: values.email, password: values.password, fullName: values.fullName })
-      navigate('/', { replace: true })
+      navigate('/dashboard', { replace: true })
     } catch (error) {
       setServerError(getErrorMessage(error, 'Không thể tạo tài khoản. Vui lòng thử lại.'))
     }

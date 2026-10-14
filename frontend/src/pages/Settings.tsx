@@ -215,7 +215,7 @@ export default function Settings() {
           )}
 
           <div className="settings-actions">
-            <button className="secondary-button" type="button" onClick={() => navigate('/')}>
+            <button className="secondary-button" type="button" onClick={() => navigate('/dashboard')}>
               Hủy
             </button>
             <button className="primary-button" type="submit" disabled={isSubmitting}>

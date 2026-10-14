@@ -34,7 +34,7 @@ export default function ApplicationDetail() {
   }, [id, user])
 
   if (isLoading) return <main className="detail-loading"><LoaderCircle className="spin" size={26} /> Đang tải chi tiết...</main>
-  if (error || !detail) return <main className="detail-loading"><p>{error || 'Không tìm thấy đơn ứng tuyển.'}</p><button className="secondary-button" type="button" onClick={() => navigate('/')}>Về Dashboard</button></main>
+  if (error || !detail) return <main className="detail-loading"><p>{error || 'Không tìm thấy đơn ứng tuyển.'}</p><button className="secondary-button" type="button" onClick={() => navigate('/dashboard')}>Về Dashboard</button></main>
 
   const application = detail.application
   const reload = async () => setDetail(await getApplication(application.id))

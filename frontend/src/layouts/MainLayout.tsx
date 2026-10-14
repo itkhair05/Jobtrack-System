@@ -45,7 +45,7 @@ export default function MainLayout() {
         <button
           className="navbar-icon-button mobile-bell"
           type="button"
-          onClick={() => navigate('/?reminders=1')}
+          onClick={() => navigate('/dashboard?reminders=1')}
           aria-label={`${reminderCount} thông báo follow-up`}
           title={`${reminderCount} việc cần follow-up`}
         >

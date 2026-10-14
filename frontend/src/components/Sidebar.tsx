@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 const navigation = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/applications', label: 'Ứng tuyển', icon: BriefcaseBusiness, end: false },
   { to: '/analytics', label: 'Thống kê', icon: BarChart3, end: false },
   { to: '/cvs', label: 'Kho CV', icon: FileText, end: false },
@@ -47,11 +47,11 @@ export default function Sidebar({ isOpenMobile, onCloseMobile }: SidebarProps) {
       <aside className={`app-sidebar ${collapsed ? 'is-collapsed' : ''} ${isOpenMobile ? 'is-mobile-open' : ''}`}>
         <div
           className="sidebar-brand"
-          onClick={() => { handleLinkClick(); navigate('/') }}
+          onClick={() => { handleLinkClick(); navigate('/dashboard') }}
           style={{ cursor: 'pointer' }}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleLinkClick(); navigate('/') } }}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { handleLinkClick(); navigate('/dashboard') } }}
           aria-label="JobTrack Trang chủ"
         >
           <span className="brand-mark"><BriefcaseBusiness size={18} /></span>

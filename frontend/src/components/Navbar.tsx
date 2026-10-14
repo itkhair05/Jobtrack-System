@@ -30,7 +30,7 @@ export default function Navbar() {
         <button
           className="navbar-icon-button"
           type="button"
-          onClick={() => navigate('/?reminders=1')}
+          onClick={() => navigate('/dashboard?reminders=1')}
           aria-label={`${reminderCount} việc cần follow-up`}
           title={`${reminderCount} việc cần follow-up`}
         >
